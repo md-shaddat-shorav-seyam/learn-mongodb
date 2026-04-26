@@ -107,3 +107,11 @@ User.find().sort({ createdAt: -1 });
 If you want, I can show you:
 👉 how to format timestamps in frontend
 👉 or how to use them in aggregation queries (very useful for analytics)
+
+
+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++==
+# 2 dataBase name saves at lowercase
+
+export const Todo = mongoose.model("Todo",todoSchema)
+
+
