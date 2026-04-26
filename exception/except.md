@@ -110,8 +110,155 @@ If you want, I can show you:
 
 
 ++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++==
-# 2 dataBase name saves at lowercase
+# 2 dataBase name saves at lowercase and plural form
 
 export const Todo = mongoose.model("Todo",todoSchema)
+
+
+When you write:
+
+```js
+export const Todo = mongoose.model("Todo", todoSchema)
+```
+
+it looks simple, but there’s an important hidden behavior in **Mongoose** about **model names vs collection names**.
+
+---
+
+# 🔥 Core Concept
+
+### 1. Model Name ≠ Collection Name
+
+* `"Todo"` → **Model name (Singular, PascalCase)**
+* MongoDB will automatically convert it to:
+
+👉 `"todos"` → **Collection name (lowercase + plural)**
+
+---
+
+# ⚙️ How Mongoose Converts It
+
+Mongoose applies **pluralization + lowercase rule**:
+
+| Model Name | Collection Name |
+| ---------- | --------------- |
+| `"Todo"`   | `"todos"`       |
+| `"User"`   | `"users"`       |
+| `"Person"` | `"people"`      |
+
+👉 It uses an internal pluralization library.
+
+---
+
+# 🧠 Why lowercase?
+
+Because **MongoDB** convention is:
+
+* Collection names are **lowercase**
+* Usually **plural**
+
+So Mongoose enforces this automatically.
+
+---
+
+# 🧪 Example (Real Use Case)
+
+```js
+const todoSchema = new mongoose.Schema({
+  title: String,
+  completed: Boolean
+})
+
+export const Todo = mongoose.model("Todo", todoSchema)
+```
+
+Now when you insert:
+
+```js
+await Todo.create({ title: "Learn Mongoose", completed: false })
+```
+
+👉 Data is saved in:
+
+```
+todos  (NOT Todo)
+```
+
+---
+
+# 🛑 Important Interview Point
+
+👉 **Model name is for your code**
+👉 **Collection name is for the database**
+
+---
+
+# 🧩 How to Control Collection Name (IMPORTANT)
+
+If you want to **stop automatic lowercase + plural**, you can define it manually:
+
+```js
+export const Todo = mongoose.model("Todo", todoSchema, "Todo")
+```
+
+Now collection will be:
+
+```
+Todo  (exact name, no change)
+```
+
+---
+
+# 🧠 Behind the Scenes Flow
+
+```
+"Todo" (Model)
+   ↓
+Lowercase → "todo"
+   ↓
+Plural → "todos"
+   ↓
+MongoDB collection
+```
+
+---
+
+# 🚀 Best Practice
+
+✔ Use **PascalCase singular** for models
+✔ Let Mongoose handle collection naming
+
+```js
+User → users  
+Order → orders  
+Product → products
+```
+
+---
+
+# ⚠️ Common Mistake
+
+```js
+mongoose.model("todos", schema)
+```
+
+❌ Wrong (already plural + lowercase)
+👉 Leads to weird names like `"todoss"`
+
+---
+
+# 🎯 Summary
+
+* `"Todo"` → model name
+* `"todos"` → actual MongoDB collection
+* Mongoose **automatically lowercase + pluralize**
+* You can override it with the 3rd parameter
+
+---
+
+If you want, I can show you:
+
+* 🔥 Full CRUD project using Todo (real-world API)
+* 🔥 How Mongoose connects with Express + MongoDB step by step
 
 
